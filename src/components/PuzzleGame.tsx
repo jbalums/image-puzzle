@@ -3,7 +3,16 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Upload, Image as ImageIcon, Timer, Shuffle, RotateCcw, Eye, EyeOff, Trophy } from "lucide-react";
+import {
+  Upload,
+  Image as ImageIcon,
+  Timer,
+  Shuffle,
+  RotateCcw,
+  Eye,
+  EyeOff,
+  Trophy,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type Piece = {
@@ -31,7 +40,9 @@ const PRESETS = [
 const MAX_FILE_MB = 10;
 
 function fmtTime(s: number) {
-  const m = Math.floor(s / 60).toString().padStart(2, "0");
+  const m = Math.floor(s / 60)
+    .toString()
+    .padStart(2, "0");
   const sec = (s % 60).toString().padStart(2, "0");
   return `${m}:${sec}`;
 }
@@ -62,6 +73,8 @@ export default function PuzzleGame() {
   const [bestTime, setBestTime] = useState<number | null>(null);
   const [dragId, setDragId] = useState<number | null>(null);
   const [hoverIdx, setHoverIdx] = useState<number | null>(null);
+  const [bgColor, setBgColor] = useState<string>("#18181b");
+  const [confirmReset, setConfirmReset] = useState(false);
   const boardRef = useRef<HTMLDivElement>(null);
   const touchDataRef = useRef<{ pieceId: number; el: HTMLElement } | null>(null);
 
@@ -137,7 +150,17 @@ export default function PuzzleGame() {
     for (let r = 0; r < rows; r++) {
       for (let c = 0; c < cols; c++) {
         ctx.clearRect(0, 0, pw, ph);
-        ctx.drawImage(imgEl, c * (imgEl.width / cols), r * (imgEl.height / rows), imgEl.width / cols, imgEl.height / rows, 0, 0, pw, ph);
+        ctx.drawImage(
+          imgEl,
+          c * (imgEl.width / cols),
+          r * (imgEl.height / rows),
+          imgEl.width / cols,
+          imgEl.height / rows,
+          0,
+          0,
+          pw,
+          ph,
+        );
         const dataUrl = canvas.toDataURL("image/jpeg", 0.85);
         newPieces.push({
           id: id++,
@@ -154,7 +177,7 @@ export default function PuzzleGame() {
       }
     }
     // Shuffle layout (guarantee not solved)
-    let order = shuffle(newPieces.map((p) => p.id));
+    const order = shuffle(newPieces.map((p) => p.id));
     if (order.every((v, i) => v === i)) {
       [order[0], order[1]] = [order[1], order[0]];
     }
@@ -187,13 +210,17 @@ export default function PuzzleGame() {
       });
       setPieces((ps) => {
         const np = ps.map((p) => ({ ...p }));
-        const ra = Math.floor(idxA / cols), ca = idxA % cols;
-        const rb = Math.floor(idxB / cols), cb = idxB % cols;
+        const ra = Math.floor(idxA / cols),
+          ca = idxA % cols;
+        const rb = Math.floor(idxB / cols),
+          cb = idxB % cols;
         const pa = np.find((p) => p.currentRow === ra && p.currentCol === ca);
         const pb = np.find((p) => p.currentRow === rb && p.currentCol === cb);
         if (pa && pb) {
-          pa.currentRow = rb; pa.currentCol = cb;
-          pb.currentRow = ra; pb.currentCol = ca;
+          pa.currentRow = rb;
+          pa.currentCol = cb;
+          pb.currentRow = ra;
+          pb.currentCol = ca;
         }
         return np;
       });
@@ -205,7 +232,9 @@ export default function PuzzleGame() {
   // Check completion
   useEffect(() => {
     if (phase !== "play" || pieces.length === 0) return;
-    const done = pieces.every((p) => p.currentRow === p.correctRow && p.currentCol === p.correctCol);
+    const done = pieces.every(
+      (p) => p.currentRow === p.correctRow && p.currentCol === p.correctCol,
+    );
     if (done && !completed) {
       setCompleted(true);
       setRunning(false);
@@ -218,7 +247,9 @@ export default function PuzzleGame() {
     }
   }, [pieces, phase, completed, elapsed, rows, cols]);
 
-  const correctCount = pieces.filter((p) => p.currentRow === p.correctRow && p.currentCol === p.correctCol).length;
+  const correctCount = pieces.filter(
+    (p) => p.currentRow === p.correctRow && p.currentCol === p.correctCol,
+  ).length;
   const pct = pieces.length ? Math.round((correctCount / pieces.length) * 100) : 0;
 
   // Drag handlers
@@ -334,24 +365,26 @@ export default function PuzzleGame() {
 
         {phase === "play" && imgSrc && (
           <div className="grid lg:grid-cols-[1fr_280px] gap-6">
-            <Card className="p-3 sm:p-4 shadow-xl">
+            <Card className="p-0 shadow-xl">
               <div
                 ref={boardRef}
-                className="relative w-full rounded-lg overflow-hidden bg-muted/40"
-                style={{ aspectRatio: String(aspectRatio) }}
+                className="relative w-full rounded-lg overflow-hidden"
+                style={{ aspectRatio: String(aspectRatio), backgroundColor: bgColor }}
               >
                 <div
                   className="absolute inset-0 grid touch-none select-none"
                   style={{
                     gridTemplateColumns: `repeat(${cols}, minmax(0,1fr))`,
                     gridTemplateRows: `repeat(${rows}, minmax(0,1fr))`,
-                    gap: "2px",
+                    gap: "4px",
                   }}
                 >
                   {grid.map((pid, idx) => {
                     const piece = pieces.find((p) => p.id === pid);
                     if (!piece) return null;
-                    const correct = piece.currentRow === piece.correctRow && piece.currentCol === piece.correctCol;
+                    const correct =
+                      piece.currentRow === piece.correctRow &&
+                      piece.currentCol === piece.correctCol;
                     const isHover = hoverIdx === idx && dragId !== null;
                     const isDragging = dragId === piece.id;
                     return (
@@ -360,7 +393,8 @@ export default function PuzzleGame() {
                         data-cell-idx={idx}
                         className={cn(
                           "relative rounded-md overflow-hidden transition-all duration-200",
-                          isHover && "ring-4 ring-accent ring-offset-1 ring-offset-card scale-[1.02]",
+                          isHover &&
+                            "ring-4 ring-accent ring-offset-1 ring-offset-card scale-[1.02]",
                           correct && !isDragging && "ring-2 ring-primary/50",
                         )}
                         onDragOver={(e) => onDragOver(e, idx)}
@@ -371,7 +405,10 @@ export default function PuzzleGame() {
                           alt=""
                           draggable
                           onDragStart={(e) => onDragStart(e, piece.id)}
-                          onDragEnd={() => { setDragId(null); setHoverIdx(null); }}
+                          onDragEnd={() => {
+                            setDragId(null);
+                            setHoverIdx(null);
+                          }}
                           onTouchStart={(e) => onTouchStart(e, piece.id)}
                           onTouchMove={onTouchMove}
                           onTouchEnd={onTouchEnd}
@@ -397,10 +434,16 @@ export default function PuzzleGame() {
                   </Button>
                 </div>
                 {showOriginal && (
-                  <img src={imgSrc} alt="Original" className="w-full rounded-md border border-border" />
+                  <img
+                    src={imgSrc}
+                    alt="Original"
+                    className="w-full rounded-md border border-border"
+                  />
                 )}
                 {!showOriginal && (
-                  <p className="text-xs text-muted-foreground">Click to peek at the reference image.</p>
+                  <p className="text-xs text-muted-foreground">
+                    Click to peek at the reference image.
+                  </p>
                 )}
               </Card>
 
@@ -412,11 +455,53 @@ export default function PuzzleGame() {
                 {bestTime !== null && <Row label="Best" value={fmtTime(bestTime)} />}
               </Card>
 
+              <Card className="p-4 space-y-3">
+                <h3 className="font-semibold text-sm">Board Color</h3>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    { label: "Dark", value: "#18181b" },
+                    { label: "White", value: "#ffffff" },
+                    { label: "Blue", value: "#1e3a5f" },
+                    { label: "Green", value: "#14532d" },
+                    { label: "Red", value: "#7f1d1d" },
+                    { label: "Purple", value: "#3b0764" },
+                  ].map((c) => (
+                    <button
+                      key={c.value}
+                      title={c.label}
+                      onClick={() => setBgColor(c.value)}
+                      className="w-7 h-7 rounded-full border-2 transition-transform hover:scale-110"
+                      style={{
+                        backgroundColor: c.value,
+                        borderColor: bgColor === c.value ? "hsl(var(--primary))" : "transparent",
+                        outline:
+                          bgColor === c.value
+                            ? "2px solid hsl(var(--primary))"
+                            : "2px solid hsl(var(--border))",
+                        outlineOffset: "1px",
+                      }}
+                    />
+                  ))}
+                </div>
+                <div className="flex items-center gap-2">
+                  <Label htmlFor="bgColorPicker" className="text-xs text-muted-foreground shrink-0">
+                    Custom
+                  </Label>
+                  <input
+                    id="bgColorPicker"
+                    type="color"
+                    value={bgColor}
+                    onChange={(e) => setBgColor(e.target.value)}
+                    className="h-7 w-full cursor-pointer rounded border border-border bg-card"
+                  />
+                </div>
+              </Card>
+
               <Card className="p-4 space-y-2">
                 <Button onClick={reshuffle} variant="secondary" className="w-full">
                   <Shuffle className="w-4 h-4 mr-2" /> Reshuffle
                 </Button>
-                <Button onClick={reset} variant="outline" className="w-full">
+                <Button onClick={() => setConfirmReset(true)} variant="outline" className="w-full">
                   <RotateCcw className="w-4 h-4 mr-2" /> New Image
                 </Button>
               </Card>
@@ -424,6 +509,32 @@ export default function PuzzleGame() {
           </div>
         )}
       </main>
+
+      {confirmReset && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm grid place-items-center p-4">
+          <Card className="max-w-sm w-full p-6 text-center">
+            <h2 className="text-lg font-semibold mb-2">Start over?</h2>
+            <p className="text-sm text-muted-foreground mb-5">
+              Your current progress will be lost.
+            </p>
+            <div className="flex gap-2">
+              <Button variant="outline" className="flex-1" onClick={() => setConfirmReset(false)}>
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                className="flex-1"
+                onClick={() => {
+                  setConfirmReset(false);
+                  reset();
+                }}
+              >
+                New Image
+              </Button>
+            </div>
+          </Card>
+        </div>
+      )}
 
       {completed && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm grid place-items-center p-4 animate-fade-in">
@@ -439,10 +550,16 @@ export default function PuzzleGame() {
               <Stat label="Moves" value={String(moves)} />
               <Stat label="Grid" value={`${rows}×${cols}`} />
             </div>
-            {bestTime === elapsed && <p className="text-xs text-accent-foreground mb-3">New best time!</p>}
+            {bestTime === elapsed && (
+              <p className="text-xs text-accent-foreground mb-3">New best time!</p>
+            )}
             <div className="flex gap-2">
-              <Button onClick={reshuffle} className="flex-1">Play Again</Button>
-              <Button onClick={reset} variant="outline" className="flex-1">New Image</Button>
+              <Button onClick={reshuffle} className="flex-1">
+                Play Again
+              </Button>
+              <Button onClick={() => setConfirmReset(true)} variant="outline" className="flex-1">
+                New Image
+              </Button>
             </div>
           </Card>
         </div>
@@ -491,11 +608,18 @@ function UploadView({
   return (
     <div className="max-w-2xl mx-auto">
       <div className="text-center mb-6">
-        <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">Turn any image into a puzzle</h2>
-        <p className="text-muted-foreground mt-2">Upload a photo, choose your grid, and start solving.</p>
+        <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
+          Turn any image into a puzzle
+        </h2>
+        <p className="text-muted-foreground mt-2">
+          Upload a photo, choose your grid, and start solving.
+        </p>
       </div>
       <label
-        onDragOver={(e) => { e.preventDefault(); setOver(true); }}
+        onDragOver={(e) => {
+          e.preventDefault();
+          setOver(true);
+        }}
         onDragLeave={() => setOver(false)}
         onDrop={(e) => {
           e.preventDefault();
@@ -508,26 +632,38 @@ function UploadView({
           over ? "border-primary bg-primary/5 scale-[1.01]" : "border-border",
         )}
       >
-        <input type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={onChange} />
+        <input
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          className="hidden"
+          onChange={onChange}
+        />
         <div className="w-16 h-16 rounded-full bg-primary/10 grid place-items-center mx-auto mb-4">
           <Upload className="w-7 h-7 text-primary" />
         </div>
         <p className="font-medium">Click or drag an image here</p>
         <p className="text-xs text-muted-foreground mt-1">JPG, PNG, WEBP · up to {MAX_FILE_MB}MB</p>
       </label>
-      {error && (
-        <p className="mt-3 text-sm text-destructive text-center">{error}</p>
-      )}
+      {error && <p className="mt-3 text-sm text-destructive text-center">{error}</p>}
     </div>
   );
 }
 
 function ConfigureView({
-  imgSrc, rows, cols, setRows, setCols, onGenerate, onBack, bestTime,
+  imgSrc,
+  rows,
+  cols,
+  setRows,
+  setCols,
+  onGenerate,
+  onBack,
+  bestTime,
 }: {
   imgSrc: string;
-  rows: number; cols: number;
-  setRows: (n: number) => void; setCols: (n: number) => void;
+  rows: number;
+  cols: number;
+  setRows: (n: number) => void;
+  setCols: (n: number) => void;
   onGenerate: () => void;
   onBack: () => void;
   bestTime: number | null;
@@ -552,14 +688,19 @@ function ConfigureView({
               return (
                 <button
                   key={p.label}
-                  onClick={() => { setRows(p.r); setCols(p.c); }}
+                  onClick={() => {
+                    setRows(p.r);
+                    setCols(p.c);
+                  }}
                   className={cn(
                     "rounded-lg border p-3 text-left transition-all hover:border-primary/60",
                     active ? "border-primary bg-primary/5" : "border-border bg-card",
                   )}
                 >
                   <div className="font-semibold text-sm">{p.label}</div>
-                  <div className="text-xs text-muted-foreground">{p.r}×{p.c} · {p.r * p.c} pieces</div>
+                  <div className="text-xs text-muted-foreground">
+                    {p.r}×{p.c} · {p.r * p.c} pieces
+                  </div>
                 </button>
               );
             })}
@@ -568,14 +709,30 @@ function ConfigureView({
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <Label htmlFor="rows" className="text-xs">Rows (2–20)</Label>
-            <Input id="rows" type="number" min={2} max={20} value={rows}
-              onChange={(e) => setRows(clamp(Number(e.target.value)))} />
+            <Label htmlFor="rows" className="text-xs">
+              Rows (2–20)
+            </Label>
+            <Input
+              id="rows"
+              type="number"
+              min={2}
+              max={20}
+              value={rows}
+              onChange={(e) => setRows(clamp(Number(e.target.value)))}
+            />
           </div>
           <div>
-            <Label htmlFor="cols" className="text-xs">Columns (2–20)</Label>
-            <Input id="cols" type="number" min={2} max={20} value={cols}
-              onChange={(e) => setCols(clamp(Number(e.target.value)))} />
+            <Label htmlFor="cols" className="text-xs">
+              Columns (2–20)
+            </Label>
+            <Input
+              id="cols"
+              type="number"
+              min={2}
+              max={20}
+              value={cols}
+              onChange={(e) => setCols(clamp(Number(e.target.value)))}
+            />
           </div>
         </div>
 
@@ -585,14 +742,20 @@ function ConfigureView({
         </div>
         {bestTime !== null && (
           <div className="rounded-lg bg-accent/10 p-3 flex items-center justify-between text-sm">
-            <span className="text-muted-foreground">Best for {rows}×{cols}</span>
+            <span className="text-muted-foreground">
+              Best for {rows}×{cols}
+            </span>
             <span className="font-semibold tabular-nums">{fmtTime(bestTime)}</span>
           </div>
         )}
 
         <div className="flex gap-2 pt-2">
-          <Button variant="outline" onClick={onBack} className="flex-1">Back</Button>
-          <Button onClick={onGenerate} className="flex-1">Generate Puzzle</Button>
+          <Button variant="outline" onClick={onBack} className="flex-1">
+            Back
+          </Button>
+          <Button onClick={onGenerate} className="flex-1">
+            Generate Puzzle
+          </Button>
         </div>
       </Card>
     </div>

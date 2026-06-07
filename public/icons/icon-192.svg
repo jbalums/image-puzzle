@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192">
+  <rect width="192" height="192" rx="32" fill="#7c3aed"/>
+  <!-- Puzzle piece grid: 2x2 -->
+  <!-- Top-left piece -->
+  <path d="M 40 40 L 82 40 L 82 60 Q 92 55 92 65 Q 92 75 82 70 L 82 82 L 62 82 Q 57 92 67 92 Q 77 92 72 82 L 84 82 L 84 40 Z" fill="none"/>
+  <!-- Simplified puzzle icon: 4 interlocking pieces -->
+  <rect x="44" y="44" width="38" height="38" rx="4" fill="white" opacity="0.95"/>
+  <rect x="110" y="44" width="38" height="38" rx="4" fill="white" opacity="0.80"/>
+  <rect x="44" y="110" width="38" height="38" rx="4" fill="white" opacity="0.80"/>
+  <rect x="110" y="110" width="38" height="38" rx="4" fill="white" opacity="0.95"/>
+  <!-- Connector bumps -->
+  <circle cx="96" cy="63" r="8" fill="#7c3aed"/>
+  <circle cx="96" cy="63" r="6" fill="white" opacity="0.9"/>
+  <circle cx="63" cy="96" r="8" fill="#7c3aed"/>
+  <circle cx="63" cy="96" r="6" fill="white" opacity="0.75"/>
+  <circle cx="129" cy="96" r="8" fill="#7c3aed"/>
+  <circle cx="129" cy="96" r="6" fill="white" opacity="0.75"/>
+  <circle cx="96" cy="129" r="8" fill="#7c3aed"/>
+  <circle cx="96" cy="129" r="6" fill="white" opacity="0.9"/>
+</svg>
