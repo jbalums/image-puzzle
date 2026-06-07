@@ -1,29 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
+import PuzzleGame from "@/components/PuzzleGame";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Your App" },
-      { name: "description", content: "Replace this with a one-sentence description of your app." },
-      { property: "og:title", content: "Your App" },
-      { property: "og:description", content: "Replace this with a one-sentence description of your app." },
+      { title: "Pixel Puzzle — Turn any image into a jigsaw" },
+      { name: "description", content: "Upload an image, pick your grid, and solve a responsive drag-and-drop jigsaw puzzle." },
+      { property: "og:title", content: "Pixel Puzzle" },
+      { property: "og:description", content: "Upload an image, pick your grid, and solve a responsive drag-and-drop jigsaw puzzle." },
     ],
   }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
 function Index() {
-  return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
-  );
+  return <PuzzleGame />;
 }
