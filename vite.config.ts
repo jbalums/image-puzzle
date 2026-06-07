@@ -12,4 +12,6 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  // nitro: {} enables the plugin; preset auto-detected from VERCEL/NETLIFY env vars at build time
+  nitro: {},
 });
